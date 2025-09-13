@@ -35,7 +35,7 @@ resource "aws_db_instance" "rds_mysql" {
   password             = "root12345"
   port                 = 3306
   
-  db_subnet_group_name   = "rds-challenge"
+  db_subnet_group_name   = "rds-subnet-group"
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   publicly_accessible    = false
   
