@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 data "aws_vpc" "existing_vpc" {
-  id = "vpc-0a3cda330a9a42e26" 
+  id = "vpc-0a3cda330a9a42e26"
 }
 
 data "aws_security_group" "rds_sg" {
@@ -22,32 +22,33 @@ data "aws_subnet" "eks_subnet_3" {
   id = "subnet-07f3f69e4421c1991"
 }
 
-resource "aws_db_instance" "rds_mysql" {
-  identifier           = "tech-challenge-db"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t3.micro"
-  allocated_storage    = 20
+resource "aws_db_instance" "mysql_database" {
+  identifier            = "tech-challenge-db"
+  engine                = "mysql"
+  engine_version        = "8.0"
+  instance_class        = "db.t3.micro"
+  allocated_storage     = 20
   max_allocated_storage = 50
-  
-  db_name              = "fiap"
-  username             = "admin"
-  password             = "root12345"
-  port                 = 3306
-  
+
+  db_name  = "fiap"
+  username = "admin"
+  password = "root12345"
+  port     = 3306
+
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   publicly_accessible    = false
-  
+
   backup_retention_period = 3
   skip_final_snapshot     = true
   deletion_protection     = false
-  
+
   tags = {
-    Name = "tech-challenge-mysql"
+    Name     = "tech-challenge-mysql"
     Provider = "Terraform"
   }
 }
+
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name = "rds-subnet-group"
   subnet_ids = [
@@ -60,7 +61,6 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
     Provider = "Terraform"
   }
 }
-
 
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
