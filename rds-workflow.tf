@@ -6,10 +6,6 @@ data "aws_vpc" "existing_vpc" {
   id = "vpc-0a3cda330a9a42e26"
 }
 
-data "aws_security_group" "rds_sg" {
-  id = "sg-0fe00207637248200"
-}
-
 data "aws_subnet" "eks_subnet_1" {
   id = "subnet-0dbdb383d5ba07a45"
 }
@@ -20,6 +16,45 @@ data "aws_subnet" "eks_subnet_2" {
 
 data "aws_subnet" "eks_subnet_3" {
   id = "subnet-07f3f69e4421c1991"
+}
+
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-security-group"
+  description = "Security group for RDS MySQL"
+  vpc_id      = data.aws_vpc.existing_vpc.id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"] # ajuste para a rede do EKS
+    description = "Allow MySQL from EKS nodes"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name     = "rds-mysql-sg"
+    Provider = "Terraform"
+  }
+}
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name = "rds-subnet-group"
+  subnet_ids = [
+    data.aws_subnet.eks_subnet_1.id,
+    data.aws_subnet.eks_subnet_2.id
+  ]
+
+  tags = {
+    Name     = "RDS Subnet Group"
+    Provider = "Terraform"
+  }
 }
 
 resource "aws_db_instance" "mysql_database" {
@@ -45,45 +80,6 @@ resource "aws_db_instance" "mysql_database" {
 
   tags = {
     Name     = "tech-challenge-mysql"
-    Provider = "Terraform"
-  }
-}
-
-resource "aws_db_subnet_group" "rds_subnet_group" {
-  name = "rds-subnet-group"
-  subnet_ids = [
-    data.aws_subnet.eks_subnet_1.id,
-    data.aws_subnet.eks_subnet_2.id
-  ]
-
-  tags = {
-    Name     = "RDS Subnet Group"
-    Provider = "Terraform"
-  }
-}
-
-resource "aws_security_group" "rds_sg" {
-  name        = "rds-security-group"
-  description = "Security group for RDS MySQL"
-  vpc_id      = data.aws_vpc.existing_vpc.id
-
-  ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    description = "Allow MySQL from EKS nodes"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-
-  tags = {
-    Name     = "rds-mysql-sg"
     Provider = "Terraform"
   }
 }
