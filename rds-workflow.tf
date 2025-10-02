@@ -35,7 +35,7 @@ resource "aws_db_instance" "rds_mysql" {
   password             = "root12345"
   port                 = 3306
   
-  db_subnet_group_name   = "rds-subnet-group"
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   publicly_accessible    = false
   
@@ -45,8 +45,22 @@ resource "aws_db_instance" "rds_mysql" {
   
   tags = {
     Name = "tech-challenge-mysql"
+    Provider = "Terraform"
   }
 }
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name = "rds-subnet-group"
+  subnet_ids = [
+    data.aws_subnet.eks_subnet_1.id,
+    data.aws_subnet.eks_subnet_2.id
+  ]
+
+  tags = {
+    Name     = "RDS Subnet Group"
+    Provider = "Terraform"
+  }
+}
+
 
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
@@ -57,11 +71,7 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [
-      data.aws_subnet.eks_subnet_1.cidr_block,
-      data.aws_subnet.eks_subnet_2.cidr_block,
-      data.aws_subnet.eks_subnet_3.cidr_block
-    ]
+    description = "Allow MySQL from EKS nodes"
   }
 
   egress {
@@ -69,27 +79,11 @@ resource "aws_security_group" "rds_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
   }
 
   tags = {
-    Name = "rds-mysql-sg"
+    Name     = "rds-mysql-sg"
+    Provider = "Terraform"
   }
 }
-
-resource "aws_db_subnet_group" "rds_subnet_group" {
-  name = "rds-subnet-group"
-  subnet_ids = [
-    data.aws_subnet.eks_subnet_1.id,
-    data.aws_subnet.eks_subnet_2.id,
-    data.aws_subnet.eks_subnet_3.id
-  ]
-
-  tags = {
-    Name = "RDS Subnet Group"
-  }
-}
-
-output "db_instance_endpoint" {
-  value = aws_db_instance.rds_mysql.endpoint
-}
-
