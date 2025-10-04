@@ -46,7 +46,6 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [var.your_ip]
     description = "Allow MySQL from your IP (temporary)"
   }
 
@@ -67,7 +66,7 @@ resource "aws_security_group" "rds_sg" {
 # Regra separada para permitir tráfego do EKS
 resource "aws_security_group_rule" "allow_eks" {
   count = var.eks_security_group_id != "" ? 1 : 0
-  
+
   type                     = "ingress"
   from_port                = 3306
   to_port                  = 3306

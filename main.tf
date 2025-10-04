@@ -1,6 +1,6 @@
 terraform {
   required_version = "~> 1.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "techchallenge-tf-state-975049913687"
+    bucket = "techchallenge-tf-state-tch"
     key    = "rds/terraform.tfstate"
     region = "us-east-1"
   }
