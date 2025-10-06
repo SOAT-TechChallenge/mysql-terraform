@@ -1,15 +1,21 @@
 name: Deploy RDS MySQL with Terraform
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - developer
   pull_request:
+    branches:
+      - main
+      - developer
 
 jobs:
   terraform:
     name: 'Terraform Plan and Apply'
     runs-on: ubuntu-latest
+    environment: secrets
 
     steps:
       - name: 'Checkout GitHub Repository'
