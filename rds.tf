@@ -7,10 +7,9 @@ resource "aws_db_instance" "mysql_database" {
   max_allocated_storage = 50
 
   db_name  = "fiap"
-  username = "admin"
-  password = var.db_password
+  username = jsondecode(data.aws_secretsmanager_secret_version.db_username.secret_string)["db_username"]
+  password = jsondecode(data.aws_secretsmanager_secret_version.db_password.secret_string)["db_password"]
   port     = 3306
-
 
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
