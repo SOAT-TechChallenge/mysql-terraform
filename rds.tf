@@ -46,7 +46,6 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [var.your_ip]
     description = "Allow MySQL from your IP (temporary)"
   }
 
