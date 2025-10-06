@@ -4,14 +4,14 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "eks_security_group_id" {
-  description = "Security Group ID do cluster EKS"
+variable "db_password" {
+  description = "Senha do banco de dados MySQL"
   type        = string
-  default     = ""
+  sensitive   = true
 }
 
-variable "your_ip" {
-  description = "Seu IP público para acesso temporário"
+variable "eks_security_group_id" {
+  description = "Security Group ID do cluster EKS"
   type        = string
   default     = ""
 }

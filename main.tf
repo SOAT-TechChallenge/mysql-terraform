@@ -9,8 +9,7 @@ terraform {
   }
 
   backend "s3" {
-
-    bucket = "techchallenge-tf"
+    bucket = "techchallenge-tf-state-tch"
     key    = "rds/terraform.tfstate"
     region = "us-east-1"
   }
