@@ -7,8 +7,8 @@ resource "aws_db_instance" "mysql_database" {
   max_allocated_storage = 50
 
   db_name  = "fiap"
-  username = "admin"
-  password = var.db_password
+  username = jsondecode(data.aws_secretsmanager_secret_version.db_username.secret_string)["db_username"]
+  password = jsondecode(data.aws_secretsmanager_secret_version.db_password.secret_string)["db_password"]
   port     = 3306
 
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
@@ -67,7 +67,7 @@ resource "aws_security_group" "rds_sg" {
 # Regra separada para permitir tráfego do EKS
 resource "aws_security_group_rule" "allow_eks" {
   count = var.eks_security_group_id != "" ? 1 : 0
-  
+
   type                     = "ingress"
   from_port                = 3306
   to_port                  = 3306
